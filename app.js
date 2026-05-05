@@ -93,13 +93,19 @@ function enterDashboard(role, email) {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
     
+    // Mostra o email do utilizador ou "Administrador"
     document.querySelector('.header-user span').textContent = email || 'Administrador';
     
-    // Apply role-based visibility
+    // Aplica visibilidade baseada no cargo
     const adminElements = document.querySelectorAll('.admin-only');
     adminElements.forEach(el => {
         if (role === 'admin') el.classList.remove('hidden');
         else el.classList.add('hidden');
+    });
+
+    // Adiciona ouvintes para os filtros para atualizar em tempo real
+    ['filter-period', 'filter-class', 'filter-province', 'filter-sadc', 'filter-indicador'].forEach(id => {
+        document.getElementById(id)?.addEventListener('change', updateDashboard);
     });
 }
 
@@ -178,12 +184,20 @@ function handleFileUpload(e) {
             const workbook = XLSX.read(data, {type: 'array'});
             parseExcelData(workbook);
             updateFilters();
+            
+            // Força a seleção do primeiro período se nada estiver selecionado
+            const periodSelect = document.getElementById('filter-period');
+            if (periodSelect.options.length > 0 && periodSelect.selectedIndex === -1) {
+                periodSelect.options[0].selected = true;
+            }
+
             updateDashboard();
             statusMsg.textContent = '✓ Sucesso';
             statusMsg.className = 'status-msg status-success';
         } catch (error) {
             statusMsg.textContent = '✕ Erro: ' + error.message;
             statusMsg.className = 'status-msg status-error';
+            console.error(error);
         }
     };
     reader.readAsArrayBuffer(file);
