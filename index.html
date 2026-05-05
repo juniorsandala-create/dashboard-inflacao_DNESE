@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <!-- Main Dashboard -->
+    <!-- Main Dashboard Container -->
     <div id="dashboard-screen" class="dashboard-container hidden">
         
         <!-- Sidebar -->
@@ -60,174 +60,136 @@
             </div>
             
             <div class="sidebar-menu">
-                    <div class="filters-section">
-                        <h4><i class="fas fa-filter"></i> Filtros (Use CTRL)</h4>
-                        
-                        <div class="filter-group">
-                            <label>Período</label>
-                            <select id="filter-period" multiple class="multi-select">
-                                <!-- Populated dynamically -->
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>Classe</label>
-                            <select id="filter-class" multiple class="multi-select">
-                                <!-- Populated dynamically -->
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>Província</label>
-                            <select id="filter-province" multiple class="multi-select">
-                                <!-- Populated dynamically -->
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>SADC (Países)</label>
-                            <select id="filter-sadc" multiple class="multi-select">
-                                <!-- Populated dynamically -->
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>Indicadores (Evolução Mensal)</label>
-                            <select id="filter-indicador" multiple class="multi-select">
-                                <!-- Populated dynamically -->
-                            </select>
-                        </div>
+                <div class="filters-section">
+                    <h4><i class="fas fa-filter"></i> Filtros (Use CTRL)</h4>
+                    
+                    <div class="filter-group">
+                        <label>Período</label>
+                        <select id="filter-period" multiple class="multi-select"></select>
                     </div>
 
-                    <div class="filter-group admin-only hidden">
-                        <label>Base de Dados (Excel)</label>
-                        <label for="excel-upload" class="upload-btn">
-                            <i class="fas fa-file-excel"></i> Carregar VARIAÇÃO_IPCN.xlsx
-                        </label>
-                        <input type="file" id="excel-upload" accept=".xlsx, .xls" hidden>
-                        <div id="upload-status" class="status-msg">Nenhum dado carregado</div>
+                    <div class="filter-group">
+                        <label>Classe</label>
+                        <select id="filter-class" multiple class="multi-select"></select>
                     </div>
 
-
-                    <div class="sidebar-footer">
-                        <button id="btn-users-mgmt" class="btn-secondary admin-only hidden"><i class="fas fa-users-cog"></i> Gestão de Utilizadores</button>
-                        <button id="btn-logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Terminar Sessão</button>
+                    <div class="filter-group">
+                        <label>Província</label>
+                        <select id="filter-province" multiple class="multi-select"></select>
                     </div>
+
+                    <div class="filter-group">
+                        <label>SADC (Países)</label>
+                        <select id="filter-sadc" multiple class="multi-select"></select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Indicadores (Evolução Mensal)</label>
+                        <select id="filter-indicador" multiple class="multi-select"></select>
+                    </div>
+                </div>
+
+                <div class="upload-section admin-only hidden">
+                    <h4><i class="fas fa-file-upload"></i> Dados</h4>
+                    <label for="excel-upload" class="upload-btn">
+                        <i class="fas fa-file-excel"></i> Carregar Excel
+                    </label>
+                    <input type="file" id="excel-upload" accept=".xlsx, .xls" hidden>
+                    <div id="upload-status" class="status-msg">Aguardando arquivo...</div>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button id="btn-users-mgmt" class="btn-secondary admin-only hidden"><i class="fas fa-users-cog"></i> Utilizadores</button>
+                    <button id="btn-logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Sair</button>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="main-content">
             <header class="top-header">
                 <div class="header-title">
                     <h1>Dashboard de Inflação Nacional</h1>
-                    <p>Visão Dinâmica e Integrada do IPCN de Angola</p>
+                    <p>Ministério do Planeamento - DNESE</p>
                 </div>
                 <div class="header-user">
                     <i class="fas fa-user-circle"></i>
-                    <span>Carregando...</span>
+                    <span>Administrador</span>
                 </div>
             </header>
 
-            <!-- KPI Cards -->
+            <!-- KPI Grid -->
             <section class="kpi-grid">
                 <div class="kpi-card">
                     <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
-                    <div class="kpi-info">
-                        <h3>Taxa Inflação Homóloga</h3>
-                        <p id="kpi-homologa" class="kpi-value">--%</p>
-                    </div>
+                    <div class="kpi-info"><h3>Taxa Homóloga</h3><p id="kpi-homologa" class="kpi-value">--%</p></div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon"><i class="fas fa-level-up-alt"></i></div>
-                    <div class="kpi-info">
-                        <h3>Var. Mensal IPCN</h3>
-                        <p id="kpi-mensal" class="kpi-value">--%</p>
-                    </div>
+                    <div class="kpi-info"><h3>Var. Mensal</h3><p id="kpi-mensal" class="kpi-value">--%</p></div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon"><i class="fas fa-utensils"></i></div>
-                    <div class="kpi-info">
-                        <h3>Var. Alimentação</h3>
-                        <p id="kpi-alimentacao" class="kpi-value">--%</p>
-                    </div>
+                    <div class="kpi-info"><h3>Alimentação</h3><p id="kpi-alimentacao" class="kpi-value">--%</p></div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon"><i class="fas fa-heartbeat"></i></div>
-                    <div class="kpi-info">
-                        <h3>Var. Saúde</h3>
-                        <p id="kpi-saude" class="kpi-value">--%</p>
-                    </div>
+                    <div class="kpi-info"><h3>Saúde</h3><p id="kpi-saude" class="kpi-value">--%</p></div>
                 </div>
                 <div class="kpi-card sadc-kpi-card">
                     <div class="kpi-icon"><i class="fas fa-globe-africa"></i></div>
                     <div class="kpi-info">
-                        <h3>Panorama SADC</h3>
+                        <h3>SADC</h3>
                         <div class="sadc-mini-stats">
-                            <span id="kpi-sadc-angola">🇦🇴 Angola: --</span>
-                            <span id="kpi-sadc-high" class="high">⬆️ Máx: --</span>
-                            <span id="kpi-sadc-low" class="low">⬇️ Mín: --</span>
+                            <span id="kpi-sadc-angola">🇦🇴 --</span>
+                            <span id="kpi-sadc-high" class="high">⬆️ --</span>
+                            <span id="kpi-sadc-low" class="low">⬇️ --</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Charts Area -->
+            <!-- Charts Container -->
             <div class="charts-container">
-                <!-- Row 1 -->
                 <div class="chart-box span-2">
-                    <div class="chart-header">Evolução Mensal (IPCN vs Alimentação)</div>
+                    <div class="chart-header">Evolução Mensal</div>
                     <div class="chart-body"><canvas id="chartEvolucao"></canvas></div>
                 </div>
                 <div class="chart-box">
-                    <div class="chart-header">Inflação Homóloga IPCN</div>
+                    <div class="chart-header">Inflação Homóloga</div>
                     <div class="chart-body"><canvas id="chartHomologa"></canvas></div>
                 </div>
-
-                <!-- Row 2 -->
                 <div class="chart-box">
-                    <div class="chart-header">Composição do IPCN (Classes)</div>
+                    <div class="chart-header">Composição (Classes)</div>
                     <div class="chart-body"><canvas id="chartClasses"></canvas></div>
                 </div>
                 <div class="chart-box">
-                    <div class="chart-header">IPCN por Províncias</div>
+                    <div class="chart-header">Províncias</div>
                     <div class="chart-body"><canvas id="chartProvincias"></canvas></div>
                 </div>
                 <div class="chart-box">
                     <div class="chart-header">Panorama SADC</div>
                     <div class="chart-body"><canvas id="chartSADC"></canvas></div>
                 </div>
-
-                <!-- Row 3 -->
                 <div class="chart-box span-2">
-                    <div class="chart-header">Top Variações - Produtos de Alimentação</div>
+                    <div class="chart-header">Top Variações - Produtos</div>
                     <div class="chart-body"><canvas id="chartProdutos"></canvas></div>
                 </div>
                 <div class="chart-box">
-                    <div class="chart-header">Correlação (Nacional x Luanda)</div>
+                    <div class="chart-header">Correlação (Nac x Luanda)</div>
                     <div class="chart-body"><canvas id="chartRegressao"></canvas></div>
                 </div>
 
-                <!-- User Management Section (Overlay-like Card) -->
-                <div class="card users-card hidden" id="section-users">
+                <!-- User Management (Hidden by default) -->
+                <div class="chart-box span-3 hidden" id="section-users" style="grid-column: span 3;">
                     <div class="card-header-flex">
-                        <h3 class="card-title">👥 Gestão de Utilizadores</h3>
+                        <h3>👥 Gestão de Utilizadores</h3>
                         <button id="btn-close-users" class="btn-close">×</button>
                     </div>
                     <div class="table-responsive">
                         <table class="user-table">
-                            <thead>
-                                <tr>
-                                    <th>Email</th>
-                                    <th>Cargo</th>
-                                    <th>Registo</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="users-list">
-                                <!-- Populated dynamically -->
-                            </tbody>
+                            <thead><tr><th>Email</th><th>Cargo</th><th>Registo</th><th>Ações</th></tr></thead>
+                            <tbody id="users-list"></tbody>
                         </table>
                     </div>
                 </div>
