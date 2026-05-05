@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Excel</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <input type="file" id="file" />
+    <pre id="output"></pre>
+    <script>
+        document.getElementById('file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                let result = {};
+                workbook.SheetNames.forEach(name => {
+                    const sheet = workbook.Sheets[name];
+                    // Read top 3 rows to see structure
+                    const json = XLSX.utils.sheet_to_json(sheet, {header: 1});
+                    result[name] = json.slice(0, 5);
+                });
+                document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    </script>
+</body>
+</html>
