@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINPLAN - Dashboard de Inflação (IPCN)</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <!-- SheetJS for Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK (Modular CDN) -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      window.FB = { initializeApp, getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc };
+    </script>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="LOGO MINPLAN.jfif" alt="Logo MINPLAN">
+            </div>
+            <h2 id="auth-title">Acesso ao Sistema</h2>
+            <p id="auth-subtitle">Ministério do Planeamento</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Email Institucional" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Palavra-passe" required>
+                </div>
+                <button type="submit" id="btn-auth-submit" class="btn-primary">Entrar no Sistema</button>
+            </form>
+            <p class="auth-toggle">Ainda não tem conta? <a href="#" id="toggle-signup">Pedir Acesso</a></p>
+            <div id="auth-error" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard-screen" class="dashboard-container hidden">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="LOGO MINPLAN.jfif" alt="Logo MINPLAN" class="sidebar-logo">
+                <h3>MINPLAN IPCN</h3>
+            </div>
+            
+            <div class="sidebar-menu">
+                    <div class="filter-group admin-only hidden">
+                        <label>Base de Dados (Excel)</label>
+                        <label for="excel-upload" class="upload-btn">
+                            <i class="fas fa-file-excel"></i> Carregar VARIAÇÃO_IPCN.xlsx
+                        </label>
+                        <input type="file" id="excel-upload" accept=".xlsx, .xls" hidden>
+                        <div id="upload-status" class="status-msg">Nenhum dado carregado</div>
+                    </div>
+
+                    <div class="sidebar-footer">
+                        <button id="btn-users-mgmt" class="btn-secondary admin-only hidden"><i class="fas fa-users-cog"></i> Gestão de Utilizadores</button>
+                        <button id="btn-logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Terminar Sessão</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-title">
+                    <h1>Dashboard de Inflação Nacional</h1>
+                    <p>Visão Dinâmica e Integrada do IPCN de Angola</p>
+                </div>
+                <div class="header-user">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Administrador</span>
+                </div>
+            </header>
+
+            <!-- KPI Cards -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="kpi-info">
+                        <h3>Taxa Inflação Homóloga</h3>
+                        <p id="kpi-homologa" class="kpi-value">--%</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fas fa-level-up-alt"></i></div>
+                    <div class="kpi-info">
+                        <h3>Var. Mensal IPCN</h3>
+                        <p id="kpi-mensal" class="kpi-value">--%</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fas fa-utensils"></i></div>
+                    <div class="kpi-info">
+                        <h3>Var. Alimentação</h3>
+                        <p id="kpi-alimentacao" class="kpi-value">--%</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fas fa-heartbeat"></i></div>
+                    <div class="kpi-info">
+                        <h3>Var. Saúde</h3>
+                        <p id="kpi-saude" class="kpi-value">--%</p>
+                    </div>
+                </div>
+                <div class="kpi-card sadc-kpi-card">
+                    <div class="kpi-icon"><i class="fas fa-globe-africa"></i></div>
+                    <div class="kpi-info">
+                        <h3>Panorama SADC</h3>
+                        <div class="sadc-mini-stats">
+                            <span id="kpi-sadc-angola">🇦🇴 Angola: --</span>
+                            <span id="kpi-sadc-high" class="high">⬆️ Máx: --</span>
+                            <span id="kpi-sadc-low" class="low">⬇️ Mín: --</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Area -->
+            <div class="charts-container">
+                <!-- Row 1 -->
+                <div class="chart-box span-2">
+                    <div class="chart-header">Evolução Mensal (IPCN vs Alimentação)</div>
+                    <div class="chart-body"><canvas id="chartEvolucao"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-header">Inflação Homóloga IPCN</div>
+                    <div class="chart-body"><canvas id="chartHomologa"></canvas></div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="chart-box">
+                    <div class="chart-header">Composição do IPCN (Classes)</div>
+                    <div class="chart-body"><canvas id="chartClasses"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-header">IPCN por Províncias</div>
+                    <div class="chart-body"><canvas id="chartProvincias"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-header">Panorama SADC</div>
+                    <div class="chart-body"><canvas id="chartSADC"></canvas></div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="chart-box span-2">
+                    <div class="chart-header">Top Variações - Produtos de Alimentação</div>
+                    <div class="chart-body"><canvas id="chartProdutos"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-header">Correlação (Nacional x Luanda)</div>
+                    <div class="chart-body"><canvas id="chartRegressao"></canvas></div>
+                </div>
+
+                <!-- User Management Section (Overlay-like Card) -->
+                <div class="card users-card hidden" id="section-users">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">👥 Gestão de Utilizadores</h3>
+                        <button id="btn-close-users" class="btn-close">×</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Cargo</th>
+                                    <th>Registo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-list">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
